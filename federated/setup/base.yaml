@@ -1,0 +1,92 @@
+# Not in yaml, but should be appended in the code
+# num_classes(int) / loader(class) / model(class) / num_feat(int)
+# base_lr(float)
+# ------------------------------------------------------------
+# System config: multiprocs.py
+# Always check framework/model/tuning_config
+gpu: [2]
+num_clients: 10
+fraction: 1.0
+num_rounds: 100
+seed: 42
+framework: "fedlw" # fedavg / fedpub / fedlw / hyperfedlw
+eval_global: false
+trial: test
+# Data config
+task: "pubmed_cc_total_0.2_het" # Define it in main -> data # cora / citeseer / pubmed
+data_header: "heterogeneous_partition"
+
+# Server config
+l1: 0.001
+mask_aggr: false # aggregate mask globally
+fedpub:
+  num_proxy: 5
+  num_nodes: 100
+  agg_metric: "exp" # exp / linear
+  norm_scale: 10
+  filter: false
+aggregate_classifier: true
+# Client config
+loc_l2: 0.001
+# Optimizer config
+optimizer: "adam"
+optim_param: #optimizer parameters, If lr is not defined, use base_lr
+  weight_decay: 0.000001
+base_lr: 0.01
+# Learning Config
+num_epochs: 1
+loss_func: "cross_entropy"
+loss_param:
+  # loss parameters
+# Model config
+model: "lwmaskedgcn" # gcn, maskedgcn, lwmaskedgcn
+maskedgcn:
+  clsf_mask_one: false
+  laye_mask_one: false
+  mask_drop: false 
+  mask_drop_ratio: 0.5 
+  mask_noise: false
+hypernet:
+  embedding_dim: 128
+  hidden_dim: 128
+  mlp_layers: 3
+  hn_lr: 0.005
+use_mask: true
+use_dropout: false
+mask_rank: -1 
+use_classifier_mask: false
+num_dims: 128
+num_layers: 2
+
+# Path config
+path_suffix: "_path"
+base_path: "output"
+checkpoint_path: "save/checkpoint/"
+log_path: "save/log/"
+data_path: "dataset/"
+
+log_file: "log.log"
+# Verbose config
+verbose_print_setup: true
+verbose_print_aggr: false
+verbose_print_server: true
+verbose_print_client: true
+verbose_log_setup: true
+verbose_log_aggr: true
+verbose_log_server: true
+verbose_log_client: true
+# Mode config
+debug: false
+debug_config:
+  num_clients: 10
+  server_param_dir: "/data2/ssongzoe/trashcan/"
+  client_param_dir: "/data2/ssongzoe/trashcan/"
+  server_param_file_format: "cora_server"
+  client_param_file_format: "cora_client"
+  order_by: "worker_id"
+  param_file_extension: pt
+datetoken: true
+tuning_analysis: false
+tuning_config:
+  analyze_result_path: "tuning/cora"
+  analyze_result_file: "fedpub_analysis.log"

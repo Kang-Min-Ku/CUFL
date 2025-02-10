@@ -1,0 +1,115 @@
+# Not in yaml, but should be appended in the code
+# num_classes(int) / loader(class) / model(class) / num_feat(int)
+# ------------------------------------------------------------
+# System config: multiprocs.py
+# Always check framework/model/tuning_config
+gpu: [0]
+num_clients: 10
+fraction: 1.0
+num_rounds: 100
+seed: 42
+framework: "cufl"
+eval_global: false
+trial: test
+# Data config
+task: "cora_disjoint_0.2" # Define it in main -> data # cora / citeseer / pubmed
+data_header: "heterogeneous_partition"
+# Server config
+l1: 0.001
+mask_aggr: false # aggregate mask globally
+aggregate_classifier: true
+# Client config
+loc_l2: 0.001
+# Improvement config
+proxysim:
+  num_proxy: 5
+  num_nodes: 100
+  agg_metric: "exp" # exp / linear
+  filter: false
+  scheduler:
+    init_scale: 5
+    window_size: 5
+    patience: 5
+    varying_factor: 1.25
+    max_scale: 10
+    min_scale: 3
+    prefer_larger: false
+    
+curriculum:
+  decoder: "cosine"
+  optimizer: "adam"
+  optim_param:
+    lr: 0.05
+  proxy_optim_param:
+    lr: 0.0005
+  pretrained_path: "pretrained/"
+  # pretrained_header: "fedavg_pretrained_citeseer_client"
+  order_by: "client_id"
+  pretrained_extension: "pt"
+  confidence_norm_scale: 2
+  confidence_norm_method: "min" # min / sum
+  loss_type: "increase"
+  warmup_epochs: 5
+  warmup_pd: 0.001
+  base_pd: 1
+  beta: 0.98
+  predict_mask_threshold: 0.3
+  train_cycle: 5
+  proxy_train_cycle: 5
+  train_epochs: 5
+  pd_update_rule: "1"
+  transfer_mask_method: "ratio" #ratio, threshold
+  transfer_mask_threshold: 0.4
+  transfer_mask_ratio: 0.3 # remove the bottom [ratio]% of the mask
+  use_edge_confidence: true
+
+# Learning Config
+optimizer: "adam"
+optim_param: #optimizer parameters, If lr is not defined, use base_lr
+  weight_decay: 0.000001
+base_lr: 0.01
+num_epochs: 1
+loss_func: "cross_entropy"
+loss_param:
+
+# Model config
+model: "maskedgcn" # gcn, maskedgcn, lwmaskedgcn
+maskedgcn:
+  clsf_mask_one: true
+  laye_mask_one: true
+  mask_drop: false 
+  mask_drop_ratio: 0.5 
+  mask_noise: false
+use_mask: true
+use_dropout: false
+mask_rank: -1 
+use_classifier_mask: false
+num_dims: 128
+num_layers: 2
+
+# Path config
+path_suffix: "_path"
+base_path: "output"
+checkpoint_path: "save/checkpoint/"
+log_path: "save/log/"
+data_path: "dataset/"
+
+log_file: "log.log"
+# Verbose config
+verbose_print_setup: true
+verbose_print_aggr: false
+verbose_print_server: true
+verbose_print_client: true
+verbose_log_setup: true
+verbose_log_aggr: true
+verbose_log_server: true
+verbose_log_client: true
+
+# Mode config
+debug: false
+pretrain: false
+datetoken: true
+tuning_analysis: true
+tuning_config:
+  analyze_result_path: "tuning/"
+  analyze_result_file: "_"
