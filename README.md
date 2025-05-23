@@ -58,3 +58,9 @@ Here is an example
 python3 main.py --config config/fedprox_pretrain.yaml
 python3 main.py --config config/cufl_cora.yaml
 ```
+
+# Hyperparameters setting
+```
+GNN hidden dim : 128
+
+```
